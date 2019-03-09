@@ -15,26 +15,27 @@ void setup() {
   int numStaircases = 16;
   float angleStep =  (2 * PI) / numStaircases;
   int stepLen = 56;
+  int nSeed = 0;
 
-  stroke(255, 0, 0);  
-  for (int i = 0; i < numStaircases; i++){
-    noiseSeed(i);
-    drawVectorList(staircase(10, stepLen, stepLen, .075));
-    rotate(angleStep);
+  List<Integer> colors = new ArrayList<Integer>();
+  int numShades = 4;
+  int shadeStep = 255/numShades;
+  colorMode(RGB, numShades);
+  for (int i = 1; i <= numShades; i++){
+    colors.add(color(i, 0, 0));
   }
-  save("red.png");
-
-  background(0);
-  stroke(0, 255, 0);
-  for (int i = 0; i < numStaircases; i++){
-    noiseSeed(i+3);
-    drawVectorList(staircase(10, stepLen, stepLen, .075));
-    rotate(angleStep);
-  }
-  save("green.png");
-
-  popMatrix();
   
+  for (Integer c : colors) {
+    stroke(c);
+    for (int i = 0; i < numStaircases; i++){
+      noiseSeed(nSeed++);
+      drawVectorList(staircase(10, stepLen, stepLen, .075));
+      rotate(angleStep);
+    }    
+  }
+  popMatrix();
+
+  save("output.png");  
 }
 
 List<PVector> staircase (int numSteps, int stepWidth, int stepHeight, float noiseStep) {
