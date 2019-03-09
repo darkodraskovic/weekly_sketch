@@ -9,63 +9,37 @@ void setup() {
   strokeWeight(2);
   strokeJoin(MITER);
   
-  pushMatrix();
-  translate(width/2, height/2);
-
+  int numSteps = 10;
   int numStaircases = 16;
   float angleStep =  (2 * PI) / numStaircases;
   int stepLen = 56;
   int nSeed = 0;
+  float noiseStep = 0.075;
 
   List<Integer> colors = new ArrayList<Integer>();
   int numShades = 4;
   int shadeStep = 255/numShades;
   colorMode(RGB, numShades);
   for (int i = 1; i <= numShades; i++){
-    colors.add(color(i, 0, 0));
+    colors.add(color(numShades, 0, 0, i));
   }
-  
+
+  List<Staircase> staircases = new ArrayList<Staircase>();
   for (Integer c : colors) {
-    stroke(c);
     for (int i = 0; i < numStaircases; i++){
       noiseSeed(nSeed++);
-      drawVectorList(staircase(10, stepLen, stepLen, .075));
-      rotate(angleStep);
-    }    
+      Staircase s = new Staircase(numSteps, stepLen, stepLen, noiseStep, c);
+      staircases.add(s);
+    }
   }
+
+  pushMatrix();
+  translate(width/2, height/2);
+  for (Staircase s : staircases) {
+    rotate(angleStep);
+    s.display();
+  }    
   popMatrix();
 
   save("output.png");  
-}
-
-List<PVector> staircase (int numSteps, int stepWidth, int stepHeight, float noiseStep) {
-  List<PVector> vectorList = new ArrayList<PVector>();
-  
-  PVector p1, p2;
-  p1 = new PVector(0, 0);
-  p2 = new PVector();
-
-  float xoff = 0.0;
-  float yoff = 0.0;
-  
-  vectorList.add(p1.copy());
-  for (int i = 0; i < numSteps; i++){
-    xoff = xoff + noiseStep;
-    yoff = yoff + noiseStep;
-    float w = i%2 == 0 ? stepWidth*noise(xoff) : 0;
-    float h = i%2 == 0 ? 0 : stepHeight*noise(yoff);
-    p2.set(p1.x + w, p1.y - h);
-    p1 = p2.copy();
-
-    vectorList.add(p2.copy());    
-  }
-  return vectorList;
-}
-
-void drawVectorList(List<PVector> vectorList) {
-  beginShape();
-  for (PVector v : vectorList) {
-    vertex(v.x, v.y);
-  }
-  endShape();
 }
